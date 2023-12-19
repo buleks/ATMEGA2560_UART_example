@@ -1,5 +1,5 @@
-# ATMEGA2560_UART_example
-Simple uart usage example code for Atmega2560 with Arduino Mega.
+# ATMEGA2560_USART_example
+Simple uart, usart, serial usage example code for Atmega2560 with Arduino Mega.
 
 Building instruction:
 make
