@@ -5,30 +5,26 @@
 #include <util/delay.h>
 #include <stdio.h>
 
-//1152 000
+void serial_init(void);
+int serial_send( char data, FILE *stream);
 
-void USART_init(void);
-void USART_send( unsigned char data);
-void print(char * str);
-
-
-char string_buffer[100];
+static FILE out_stream = FDEV_SETUP_STREAM(serial_send, NULL, _FDEV_SETUP_WRITE);
 
 int main(void)
 {
-    USART_init();
+    serial_init();
+    stdout = &out_stream;
     
     for(int i = 0; i < 10; i++)
     {      
-        sprintf(string_buffer, "<%d>Hello!\n\r", i);
-        print(string_buffer);
-        _delay_ms(1000);        //Delay for 5 seconds so it will re-send the string every 5 seconds
+        printf("<%d>Hello!\n\r", i);
+        _delay_ms(1000);
     }
 
     return 0;
 }
 
-void USART_init(void)
+void serial_init(void)
 {
     //Arduino Atmega2560 uses PE0(RX0) i PE1(TX0)
     UCSR0B = (1 << TXEN0);
@@ -40,24 +36,15 @@ void USART_init(void)
     UBRR0 = 8;
 }
 
-unsigned char USART_receive(void)
+unsigned char serial_receive(void)
 {
     while(!(UCSR0A & (1<<RXC0)));
     return UDR0;
 }
 
-void USART_send( unsigned char data)
+int serial_send( char data, FILE *stream)
 {
     while(!(UCSR0A & (1<<UDRE0)));
     UDR0 = data;
-}
-
-void print(char * str)
-{
-    int i = 0;
-    while(str[i] != 0)
-    {
-        USART_send(str[i]);
-        i++;
-    }
+    return 0;
 }
